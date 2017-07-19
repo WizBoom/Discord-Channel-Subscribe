@@ -37,6 +37,8 @@ logger.info('Creating bot object ...')
 bot = commands.Bot(command_prefix=config['COMMAND_PREFIX'], description=config['DESCRIPTION'])
 logger.info('Setup complete')
 
+unfoundRoles = []
+
 @bot.event
 async def on_ready():
     logger.info('Logged in')
@@ -71,9 +73,14 @@ async def on_message(message):
 async def command_subscribe(context):
     """Command - subscribe"""
     try:
-        message = await subscribe(context)
-        await bot.say(message)
-        #await subscribe(context)
+        blChannels=[]
+        for bl in channels["BlacklistedChannels"]:
+            blChannels.append(bl["ID"])
+        if not context.message.channel.id in blChannels:
+            message = await subscribe(context)
+            await bot.say(message)
+        else:
+            await bot.say("This command cannot be used from this channel")
     except Exception as e:
         logger.error('Exception in !subscribe: ' + str(e))
 
@@ -84,13 +91,13 @@ async def subscribe(context):
     if len(x) <= 1:
         #RETURN CURRENT GROUPS
         groupList = PrettyTable()
-        groupList.field_names = ["Name", "Description"]
+        groupList.field_names = ["Name", "Description", "Type"]
         nothingFound = True
         for channel in channels["Roles"]:
             role = discord.utils.get(message.server.roles, name=channel['Role'])
-            if not role in message.author.roles:
+            if not role is None and not role in message.author.roles:
                 nothingFound = False
-                groupList.add_row([channel["Name"], channel["Description"]])
+                groupList.add_row([channel["Name"], channel["Description"], channel["Type"]])
         if not nothingFound:
             return "```" + groupList.get_string(sortby="Name") + "```"
         else:
@@ -106,9 +113,10 @@ async def subscribe(context):
             role = discord.utils.get(message.server.roles, name=channel['Role'])
             if role in message.author.roles:
                 return message.author.mention + ", you're already subscribed to " + channel['Name']
-            member = message.author
-            await bot.add_roles(member,role) 
-            return message.author.mention + ", you're now subscribed to " + channel['Name']
+            if not role is None: 
+                member = message.author
+                await bot.add_roles(member,role) 
+                return message.author.mention + ", you're now subscribed to " + channel['Name']
 
     return message.author.mention + ", I can't find " + args
 
@@ -133,13 +141,13 @@ async def unsubscribe(context):
     if len(x) <= 1:
         #RETURN CURRENT GROUPS
         groupList = PrettyTable()
-        groupList.field_names = ["Name", "Description"]
+        groupList.field_names = ["Name", "Description", "Type"]
         nothingFound = True
         for channel in channels["Roles"]:
             role = discord.utils.get(message.server.roles, name=channel['Role'])
-            if role in message.author.roles:
+            if not role is None and role in message.author.roles:
                 nothingFound = False
-                groupList.add_row([channel["Name"], channel["Description"]])
+                groupList.add_row([channel["Name"], channel["Description"], channel["Type"]])
         if not nothingFound:
             return "```" + groupList.get_string(sortby="Name") + "```"
         else:
@@ -154,6 +162,8 @@ async def unsubscribe(context):
         clean = clean.lower()
         if args == clean:
             role = discord.utils.get(message.server.roles, name=channel['Role'])
+            if role is None:
+                return message.author.mention + ", I can't find " + args
             if not role in message.author.roles:
                 return message.author.mention + ", you're not subscribed to " + channel['Name']
             member = message.author
