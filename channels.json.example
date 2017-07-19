@@ -1,14 +1,14 @@
 {
 	"Roles":[
 		{
-			"Role":"Role",
-			"Name":"Name",
-			"Description":"Description"
-		},
+			"Role":"",
+			"Name":"",
+			"Type":"",
+			"Description":""
+		}
+	"BlacklistedChannels":[
 		{
-			"Role":"Role2",
-			"Name":"Name2",
-			"Description":"Description2"
+			"ID":""
 		}
 	]
 }
