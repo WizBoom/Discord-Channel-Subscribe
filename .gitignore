@@ -1,0 +1,8 @@
+*.pyc
+__pycache__
+*.db
+config.json
+channels.json
+subscribe_channel.log
+log.txt
+env

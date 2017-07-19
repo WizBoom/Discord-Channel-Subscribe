@@ -1,0 +1,17 @@
+{
+    "TOKEN": "",
+    "COMMAND_PREFIX": "!",
+    "DESCRIPTION": "",
+    "LOGGING": {
+        "LEVEL": {
+            "ALL": ,
+            "CONSOLE": ,
+            "FILE": 
+        },
+        "FILE": ""
+    },
+    "PRIVATE_COMMAND_CHANNEL": {
+        "ID": ,
+        "NAME": ""
+    },
+}
